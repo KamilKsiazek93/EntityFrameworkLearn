@@ -34,9 +34,17 @@ namespace EntityFrameworkLearn.Controllers
         [HttpPost]
         public async Task<ActionResult<Brother>> PostBrother(Brother brother)
         {
-            _context.Add(brother);
+            _context.Brothers.Add(brother);
             await _context.SaveChangesAsync();
             return CreatedAtAction("GetBrother", new { id = brother.Id }, brother);
+        }
+
+        [HttpPost("brothers")]
+        public async Task<ActionResult<IEnumerable<Brother>>> PostBrothers(IEnumerable<Brother> brothers)
+        {
+            await _context.Brothers.AddRangeAsync(brothers);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction("GetBrothers", brothers);
         }
 
         [HttpPut]
