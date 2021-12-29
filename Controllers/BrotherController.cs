@@ -24,5 +24,63 @@ namespace EntityFrameworkLearn.Controllers
         {
             return await _context.Brothers.ToListAsync();
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Brother>> GetBrother(int id)
+        {
+            return await _context.Brothers.FindAsync(id);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Brother>> PostBrother(Brother brother)
+        {
+            _context.Add(brother);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction("GetBrother", new { id = brother.Id }, brother);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> PutBrother(int id, Brother brother)
+        {
+            if(id != brother.Id)
+            {
+                return BadRequest();
+            }
+            _context.Entry(brother).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch(DbUpdateException)
+            {
+                if(!brotherExist(id))
+                {
+                    NotFound();
+                }
+                throw;
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Brother>> DeleteBrother(int id)
+        {
+            var brother = await _context.Brothers.FindAsync(id);
+            if (brother == null)
+            {
+                return NotFound();
+            }
+
+            _context.Remove(brother);
+            await _context.SaveChangesAsync();
+
+            return brother;
+        }
+
+        private bool brotherExist(int id)
+        {
+            return _context.Brothers.Any(brother => brother.Id == id);
+        }
     }
 }
